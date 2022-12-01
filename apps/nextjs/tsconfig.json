@@ -3,7 +3,6 @@
   "exclude": [],
   "include": [
     "next-env.d.ts",
-    "node_modules/@acme/auth/next-auth.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "expo",
-    "slug": "expo",
+    "name": "teamsync",
+    "slug": "teamsync",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +28,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "567cd765-fa01-4a03-8dd6-de8f80a4d780"
+      }
     }
   }
 }

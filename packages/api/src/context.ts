@@ -1,5 +1,4 @@
-import { getServerSession, type Session } from "@acme/auth";
-import { prisma } from "@acme/db";
+import { prisma } from "@teamsync/db";
 import { type inferAsyncReturnType } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
@@ -7,7 +6,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
  * Replace this with an object if you want to pass things to createContextInner
  */
 type CreateContextOptions = {
-  session: Session | null;
+  user: string | null;
 };
 
 /** Use this helper for:
@@ -17,7 +16,7 @@ type CreateContextOptions = {
  */
 export const createContextInner = async (opts: CreateContextOptions) => {
   return {
-    session: opts.session,
+    user: opts.user,
     prisma,
   };
 };
@@ -27,10 +26,10 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  **/
 export const createContext = async (opts: CreateNextContextOptions) => {
-  const session = await getServerSession(opts);
+  const user = "test";
 
   return await createContextInner({
-    session,
+    user,
   });
 };
 
