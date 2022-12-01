@@ -4,7 +4,6 @@ import type { AppRouter } from "@teamsync/api";
  * A set of typesafe hooks for consuming your API.
  */
 export const trpc = createTRPCReact<AppRouter>();
-
 /**
  * Extend this function when going to production by
  * setting the baseUrl to your production API URL.
@@ -30,6 +29,10 @@ import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink } from "@trpc/client";
 import { transformer } from "@teamsync/api/transformer";
+import { inferRouterInputs, inferRouterOutputs } from "@trpc/server";
+
+export type RouterInput = inferRouterInputs<AppRouter>;
+export type RouterOutput = inferRouterOutputs<AppRouter>;
 
 export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
   children,

@@ -19,6 +19,7 @@
     "@trpc/client": "^10.1.0",
     "@trpc/react-query": "^10.1.0",
     "@trpc/server": "^10.1.0",
+    "date-fns": "^2.29.3",
     "expo": "~47.0.6",
     "expo-status-bar": "~1.4.2",
     "expo-updates": "~0.15.6",

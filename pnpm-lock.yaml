@@ -36,6 +36,7 @@ importers:
       '@trpc/server': ^10.1.0
       '@types/react': ^18.0.25
       '@types/react-native': ~0.70.6
+      date-fns: ^2.29.3
       eslint: ^8.28.0
       expo: ~47.0.6
       expo-status-bar: ~1.4.2
@@ -57,6 +58,7 @@ importers:
       '@trpc/client': 10.4.2_@trpc+server@10.4.2
       '@trpc/react-query': 10.4.2_6ndg2fges7kes3fsblwtjti6p4
       '@trpc/server': 10.4.2
+      date-fns: 2.29.3
       expo: 47.0.8_@babel+core@7.20.5
       expo-status-bar: 1.4.2
       expo-updates: 0.15.6_expo@47.0.8
@@ -3847,6 +3849,11 @@ packages:
   /damerau-levenshtein/1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
     dev: true
+
+  /date-fns/2.29.3:
+    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
+    engines: {node: '>=0.11'}
+    dev: false
 
   /dayjs/1.11.6:
     resolution: {integrity: sha512-zZbY5giJAinCG+7AGaw0wIhNZ6J8AhWuSXKvuc1KAyMiRsvGQWqh4L+MomvhdAYjN+lqvVCMq1I41e3YHvXkyQ==}
