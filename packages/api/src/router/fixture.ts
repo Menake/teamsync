@@ -1,5 +1,6 @@
 import { router, protectedProcedure } from "../trpc";
 import { z } from "zod";
+import { Availability } from "@teamsync/db";
 
 export const fixtureRouter = router({
   all: protectedProcedure.query(({ ctx }) => {
@@ -47,14 +48,14 @@ export const fixtureRouter = router({
       .sort((a, b) => a.date.getTime() - b.date.getTime())
       .filter((game) => game.date > currentDate)[0];
 
-    if (!upcoming) return null;
-
-    const detailsForTeam = upcoming.details.find(
+    const detailsForTeam = upcoming?.details.find(
       (details) => details.teamId === team.id,
     );
 
+    if (!upcoming || !detailsForTeam) return null;
+
     const availability = user.rosters.find(
-      (roster) => roster.fixtureDetailId == detailsForTeam?.id,
+      (roster) => roster.fixtureDetailId == detailsForTeam.id,
     )?.availability;
 
     const homeTeam = upcoming.participatingTeams.filter(
@@ -67,6 +68,7 @@ export const fixtureRouter = router({
 
     return {
       id: upcoming.id,
+      detailsId: detailsForTeam?.id,
       date: upcoming.date,
       team: homeTeam?.name,
       opposition: opposition?.name,
@@ -124,4 +126,39 @@ export const fixtureRouter = router({
       };
     });
   }),
+  setAvailability: protectedProcedure
+    .input(
+      z.object({
+        fixtureDetailsId: z.string(),
+        availability: z.nativeEnum(Availability),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUniqueOrThrow({
+        where: {
+          email: ctx.user,
+        },
+        include: {
+          rosters: {
+            where: {
+              fixtureDetailId: input.fixtureDetailsId,
+            },
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      const rosterMemberId = user.rosters[0]?.id;
+
+      await ctx.prisma.rosterMember.update({
+        where: {
+          id: rosterMemberId,
+        },
+        data: {
+          availability: input.availability,
+        },
+      });
+    }),
 });
