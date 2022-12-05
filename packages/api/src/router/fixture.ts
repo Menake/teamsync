@@ -9,6 +9,106 @@ export const fixtureRouter = router({
   byId: protectedProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.prisma.fixture.findFirst({ where: { id: input } });
   }),
+  details: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUniqueOrThrow({
+        where: {
+          email: ctx.user,
+        },
+      });
+
+      const details = await ctx.prisma.fixtureTeamDetail.findUniqueOrThrow({
+        where: {
+          id: input,
+        },
+        include: {
+          fixture: {
+            include: {
+              location: true,
+              participatingTeams: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              scores: {
+                select: {
+                  teamId: true,
+                  score: true,
+                },
+              },
+            },
+          },
+          roster: {
+            include: {
+              player: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const team = details.fixture.participatingTeams.find(
+        (team) => team.id === user.activeTeamId,
+      );
+
+      const opposition = details.fixture.participatingTeams.find(
+        (team) => team.id !== user.activeTeamId,
+      );
+
+      if (!team || !opposition) return;
+
+      const teamScore = details.fixture.scores.find(
+        (teamScore) => teamScore.teamId === team.id,
+      )?.score;
+
+      const oppositionScore = details.fixture.scores.find(
+        (teamScore) => teamScore.teamId === opposition.id,
+      )?.score;
+
+      const stats = await ctx.prisma.teamTournamentStats.findMany({
+        where: {
+          AND: {
+            OR: [
+              {
+                teamId: team.id,
+              },
+              {
+                teamId: opposition.id,
+              },
+            ],
+            tournamentId: details.fixture.tournamentId,
+          },
+        },
+        select: {
+          teamId: true,
+          wins: true,
+          losses: true,
+          draws: true,
+          points: true,
+        },
+      });
+
+      return {
+        id: details.id,
+        team: {
+          name: team.name,
+          score: teamScore,
+          stats: stats.find((teamStat) => teamStat.teamId === team.id),
+        },
+        opposition: {
+          name: opposition.name,
+          score: oppositionScore,
+          stats: stats.find((teamStat) => teamStat.teamId === opposition.id),
+        },
+        location: details.fixture.location,
+        date: details.fixture.date,
+      };
+    }),
   upcoming: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUniqueOrThrow({
       where: {

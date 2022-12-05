@@ -1,4 +1,6 @@
 import { Availability } from ".prisma/client";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { format } from "date-fns";
 import React, { useState } from "react";
 
@@ -22,9 +24,18 @@ const TeamAvatar = ({ teamName }: { teamName: string | undefined }) => (
 const FixtureCard = ({ fixture }: { fixture: Fixture }) => {
   if (!fixture) return null;
 
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+
   return (
-    <View className="flex h-full rounded-3xl bg-red-400 p-4 pt-8">
-      <View className="h-32 flex-none">
+    <Pressable
+      className="flex h-full flex-col justify-between rounded-3xl bg-red-400 p-4 py-5"
+      onPress={() =>
+        navigation.push("game-details", {
+          detailsId: fixture.detailsId,
+        })
+      }
+    >
+      <View className="flex-none">
         <Text className="text-4xl font-bold text-white">
           {format(fixture.date, "EEEE")}
         </Text>
@@ -32,7 +43,7 @@ const FixtureCard = ({ fixture }: { fixture: Fixture }) => {
           {format(fixture.date, "do LLLL")}
         </Text>
       </View>
-      <View className="grow" />
+      {/* <View className="grow" /> */}
       <View className="flex h-40 w-full flex-none flex-row items-center justify-around">
         <TeamAvatar teamName={fixture.team} />
         <View className="-mt-3 flex">
@@ -45,7 +56,7 @@ const FixtureCard = ({ fixture }: { fixture: Fixture }) => {
         </View>
         <TeamAvatar teamName={fixture.opposition} />
       </View>
-    </View>
+    </Pressable>
   );
 };
 
