@@ -105,7 +105,11 @@ export const fixtureRouter = router({
           score: oppositionScore,
           stats: stats.find((teamStat) => teamStat.teamId === opposition.id),
         },
-        location: details.fixture.location,
+        location: {
+          ...details.fixture.location,
+          latitude: details.fixture.location.latitude.toNumber(),
+          longitude: details.fixture.location.longitude.toNumber(),
+        },
         date: details.fixture.date,
       };
     }),

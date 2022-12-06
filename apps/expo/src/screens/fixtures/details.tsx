@@ -2,14 +2,17 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { format } from "date-fns";
 import React from "react";
 import { View, Text, Pressable } from "react-native";
-import { MaterialTabBar, Tabs } from "react-native-collapsible-tab-view";
+import { MaterialTabBar, Tab, Tabs } from "react-native-collapsible-tab-view";
 import { RouterOutput, trpc } from "../../utils/trpc";
 import { RouteProp } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import MapView, { Marker } from "react-native-maps";
+import openMap from "react-native-open-maps";
 
 type FixtureDetails = RouterOutput["fixture"]["details"];
 
 type TeamStats = NonNullable<FixtureDetails>["team"]["stats"];
+type FixtureLocation = NonNullable<FixtureDetails>["location"];
 
 function Stats({
   teamStats,
@@ -35,10 +38,49 @@ function Stats({
   );
 }
 
-function Map() {
+function Map({ location }: { location: FixtureLocation | undefined }) {
+  if (!location) return null;
+
   return (
-    <View className="h-32 bg-purple-600">
-      <Text>Map</Text>
+    <View className="mt-2 h-[75%] p-5">
+      <Pressable
+        className="flex flex-row items-center justify-between"
+        onPress={() =>
+          openMap({
+            latitude: location.latitude,
+            longitude: location.longitude,
+            query: location.address,
+            end: location.address,
+          })
+        }
+      >
+        <View>
+          <Text className="text-lg font-medium">{location.name}</Text>
+          <Text className=" text-xs text-gray-500">{location.address}</Text>
+        </View>
+        <View className="mt-3 h-6 w-6 items-center justify-center rounded-full bg-gray-200">
+          <Ionicons size={13} name="ios-location-outline" />
+        </View>
+      </Pressable>
+      <MapView
+        className="mt-5"
+        region={{
+          latitude: location.latitude,
+          longitude: location.longitude,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.04,
+        }}
+        style={{ flex: 1, borderRadius: 20 }}
+      >
+        <Marker
+          coordinate={{
+            latitude: location.latitude,
+            longitude: location.longitude,
+          }}
+          title={location.name}
+          description={location.address}
+        />
+      </MapView>
     </View>
   );
 }
@@ -104,9 +146,15 @@ export const FixtureDetailsScreen = () => {
 
   return (
     <Tabs.Container
-      renderTabBar={(props) => <MaterialTabBar {...props} activeColor="" />}
+      renderTabBar={(props) => <MaterialTabBar {...props} />}
       renderHeader={() => <Header fixture={data} />}
     >
+      <Tabs.Tab name="Map">
+        <Tabs.FlatList
+          data={[{}]}
+          renderItem={() => <Map location={data?.location} />}
+        />
+      </Tabs.Tab>
       <Tabs.Tab name="Stats">
         <Tabs.FlatList
           contentContainerStyle={{ flexGrow: 1 }}
@@ -119,9 +167,7 @@ export const FixtureDetailsScreen = () => {
           )}
         />
       </Tabs.Tab>
-      <Tabs.Tab name="Map">
-        <Tabs.FlatList data={[{}]} renderItem={() => <Map />} />
-      </Tabs.Tab>
+
       <Tabs.Tab name="Roster">
         <Tabs.FlatList data={[{}]} renderItem={() => <Roster />} />
       </Tabs.Tab>
