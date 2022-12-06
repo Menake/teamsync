@@ -93,17 +93,28 @@ export const fixtureRouter = router({
         },
       });
 
+      const teamStats = stats.find((teamStat) => teamStat.teamId === team.id);
+      const oppositionStats = stats.find(
+        (teamStat) => teamStat.teamId === opposition.id,
+      );
+
       return {
         id: details.id,
         team: {
           name: team.name,
           score: teamScore,
-          stats: stats.find((teamStat) => teamStat.teamId === team.id),
+          stats: {
+            ...teamStats,
+            points: teamStats?.points.toNumber() ?? 0,
+          },
         },
         opposition: {
           name: opposition.name,
           score: oppositionScore,
-          stats: stats.find((teamStat) => teamStat.teamId === opposition.id),
+          stats: {
+            ...oppositionStats,
+            points: oppositionStats?.points.toNumber() ?? 0,
+          },
         },
         location: {
           ...details.fixture.location,
